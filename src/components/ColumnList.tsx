@@ -1,25 +1,31 @@
+import { useMemo } from "react";
+import {
+  SortableContext,
+  horizontalListSortingStrategy,
+} from "@dnd-kit/sortable";
+
 import ColumnItem from "./ColumnItem";
 
 import { type Id, type Column } from "../types";
 
 type ColumnListProps = {
   columns: Column[];
-  setColumns: React.Dispatch<React.SetStateAction<Column[]>>;
+  deleteColumn: (columnId: Id) => void;
 };
 
-function ColumnList({ columns, setColumns }: ColumnListProps) {
-  function deleteColumn(columnId: Id) {
-    const filteredColumns = columns.filter(col => col.id !== columnId);
-
-    setColumns(filteredColumns);
-  }
+function ColumnList({ columns, deleteColumn }: ColumnListProps) {
+  const columnsId = useMemo(() => columns.map(col => col.id), [columns]);
 
   return (
-    <div className="flex gap-2">
-      {columns.map(col => (
-        <ColumnItem key={col.id} column={col} deleteColumn={deleteColumn} />
-      ))}
-    </div>
+    <ul className="flex gap-4">
+      <SortableContext
+        strategy={horizontalListSortingStrategy}
+        items={columnsId}>
+        {columns.map(col => (
+          <ColumnItem key={col.id} column={col} deleteColumn={deleteColumn} />
+        ))}
+      </SortableContext>
+    </ul>
   );
 }
 
