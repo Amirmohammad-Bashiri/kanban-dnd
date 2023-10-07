@@ -1,6 +1,16 @@
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { v4 as uuidv4 } from "uuid";
-import { DndContext, DragOverlay, DragStartEvent } from "@dnd-kit/core";
+import {
+  DndContext,
+  DragEndEvent,
+  DragOverlay,
+  DragStartEvent,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import { arrayMove } from "@dnd-kit/sortable";
 
 import PlusIcon from "../icons/PlusIcon";
 
@@ -11,6 +21,14 @@ import ColumnItem from "./ColumnItem";
 function KanbanBoard() {
   const [columns, setColumns] = useState<Column[]>([]);
   const [activeCol, setActiveCol] = useState<Column | null>();
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 5,
+      },
+    })
+  );
 
   function handleCreateColumn() {
     const columnToAdd: Column = {
@@ -34,9 +52,30 @@ function KanbanBoard() {
     }
   }
 
+  function onDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+
+    if (!over) return;
+
+    const activeColumnId = active.id;
+    const overColumnId = over.id;
+
+    if (activeColumnId === overColumnId) return;
+
+    setColumns(cols => {
+      const activeColIndex = cols.findIndex(col => col.id === activeColumnId);
+      const overColIndex = cols.findIndex(col => col.id === overColumnId);
+
+      return arrayMove(columns, activeColIndex, overColIndex);
+    });
+  }
+
   return (
     <div className="m-auto w-full min-h-screen flex items-center overflow-x-auto overflow-y-hidden px-[40px]">
-      <DndContext onDragStart={onDragStart}>
+      <DndContext
+        sensors={sensors}
+        onDragStart={onDragStart}
+        onDragEnd={onDragEnd}>
         <div className="flex gap-4 m-auto">
           <ColumnList columns={columns} deleteColumn={deleteColumn} />
           <button
@@ -45,11 +84,14 @@ function KanbanBoard() {
             <PlusIcon /> Add Column
           </button>
         </div>
-        <DragOverlay>
-          {activeCol ? (
-            <ColumnItem column={activeCol} deleteColumn={deleteColumn} />
-          ) : null}
-        </DragOverlay>
+        {createPortal(
+          <DragOverlay>
+            {activeCol ? (
+              <ColumnItem column={activeCol} deleteColumn={deleteColumn} />
+            ) : null}
+          </DragOverlay>,
+          document.body
+        )}
       </DndContext>
     </div>
   );
