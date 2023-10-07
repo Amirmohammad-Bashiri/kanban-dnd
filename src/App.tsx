@@ -1,5 +1,9 @@
+import KanbanBoard from "./components/KanbanBoard";
+
+import "./App.css";
+
 function App() {
-  return <div>boop</div>;
+  return <KanbanBoard />;
 }
 
 export default App;
