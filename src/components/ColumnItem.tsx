@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/card";
 
 import { Task, type Column, type Id } from "@/types";
+import { log } from "console";
 
 type ColumnItemProps = {
   column: Column;
@@ -63,7 +64,7 @@ function ColumnItem({
         {...listeners}
         className={clsx(
           "touch-none bg-columnBackgroundColor border-none text-white w-[350px] h-[500px] max-h-[500px] rounded-md flex flex-col",
-          isDragging && "border-2 border-rose-500 opacity-40"
+          isDragging && "border-2 border-solid border-rose-500 opacity-40"
         )}>
         <CardHeader
           onClick={() => setEditMode(true)}
