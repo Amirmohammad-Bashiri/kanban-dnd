@@ -1,10 +1,8 @@
 import { useState } from "react";
-import { createPortal } from "react-dom";
 import { v4 as uuidv4 } from "uuid";
 import {
   DndContext,
   DragEndEvent,
-  DragOverlay,
   DragStartEvent,
   PointerSensor,
   useSensor,
@@ -12,15 +10,14 @@ import {
 } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 
+import ColumnList from "./ColumnList";
 import PlusIcon from "../icons/PlusIcon";
 
-import { type Id, type Column, type Task } from "../types";
-import ColumnList from "./ColumnList";
-import ColumnItem from "./ColumnItem";
+import { type Id, type Column } from "../types";
 
 function KanbanBoard() {
   const [columns, setColumns] = useState<Column[]>([]);
-  const [tasks, setTasks] = useState<Task[]>([]);
+
   const [activeCol, setActiveCol] = useState<Column | null>();
 
   const sensors = useSensors(
@@ -53,16 +50,6 @@ function KanbanBoard() {
     });
 
     setColumns(newCols);
-  }
-
-  function createTask(colId: Id) {
-    const newTask: Task = {
-      id: uuidv4(),
-      columnId: colId,
-      content: `Task ${tasks.length + 1}`,
-    };
-
-    setTasks(prevTasks => [...prevTasks, newTask]);
   }
 
   function onDragStart(event: DragStartEvent) {
@@ -101,7 +88,7 @@ function KanbanBoard() {
             columns={columns}
             updateColumnTitle={updateColumnTitle}
             deleteColumn={deleteColumn}
-            createTask={createTask}
+            activeCol={activeCol}
           />
           <button
             onClick={handleCreateColumn}
@@ -109,19 +96,6 @@ function KanbanBoard() {
             <PlusIcon /> Add Column
           </button>
         </div>
-        {createPortal(
-          <DragOverlay>
-            {activeCol ? (
-              <ColumnItem
-                column={activeCol}
-                updateColumnTitle={updateColumnTitle}
-                deleteColumn={deleteColumn}
-                createTask={createTask}
-              />
-            ) : null}
-          </DragOverlay>,
-          document.body
-        )}
       </DndContext>
     </div>
   );
