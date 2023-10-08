@@ -12,12 +12,14 @@ type ColumnListProps = {
   columns: Column[];
   deleteColumn: (columnId: Id) => void;
   updateColumnTitle: (colId: Id, title: string) => void;
+  createTask: (colId: Id) => void;
 };
 
 function ColumnList({
   columns,
   deleteColumn,
   updateColumnTitle,
+  createTask,
 }: ColumnListProps) {
   const columnsId = useMemo(() => columns.map(col => col.id), [columns]);
 
@@ -32,6 +34,7 @@ function ColumnList({
             column={col}
             deleteColumn={deleteColumn}
             updateColumnTitle={updateColumnTitle}
+            createTask={createTask}
           />
         ))}
       </SortableContext>
