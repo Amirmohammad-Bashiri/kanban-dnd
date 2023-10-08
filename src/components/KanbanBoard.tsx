@@ -45,6 +45,15 @@ function KanbanBoard() {
     setColumns(filteredColumns);
   }
 
+  function updateColumnTitle(colId: Id, title: string) {
+    const newCols = columns.map(col => {
+      if (col.id !== colId) return col;
+      return { ...col, title };
+    });
+
+    setColumns(newCols);
+  }
+
   function onDragStart(event: DragStartEvent) {
     if (event.active.data.current?.type === "Column") {
       setActiveCol(event.active.data.current.column);
@@ -77,7 +86,11 @@ function KanbanBoard() {
         onDragStart={onDragStart}
         onDragEnd={onDragEnd}>
         <div className="flex gap-4 m-auto">
-          <ColumnList columns={columns} deleteColumn={deleteColumn} />
+          <ColumnList
+            columns={columns}
+            updateColumnTitle={updateColumnTitle}
+            deleteColumn={deleteColumn}
+          />
           <button
             onClick={handleCreateColumn}
             className="h-[60px] w-[350px] min-w-[350px] cursor-pointer rounded-lg bg-mainBackgroundColor border-2 border-columnBackgroundColor p-4 ring-rose-500 hover:ring-2 flex gap-2">
@@ -87,7 +100,11 @@ function KanbanBoard() {
         {createPortal(
           <DragOverlay>
             {activeCol ? (
-              <ColumnItem column={activeCol} deleteColumn={deleteColumn} />
+              <ColumnItem
+                column={activeCol}
+                updateColumnTitle={updateColumnTitle}
+                deleteColumn={deleteColumn}
+              />
             ) : null}
           </DragOverlay>,
           document.body

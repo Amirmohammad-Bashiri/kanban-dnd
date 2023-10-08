@@ -11,9 +11,14 @@ import { type Id, type Column } from "../types";
 type ColumnListProps = {
   columns: Column[];
   deleteColumn: (columnId: Id) => void;
+  updateColumnTitle: (colId: Id, title: string) => void;
 };
 
-function ColumnList({ columns, deleteColumn }: ColumnListProps) {
+function ColumnList({
+  columns,
+  deleteColumn,
+  updateColumnTitle,
+}: ColumnListProps) {
   const columnsId = useMemo(() => columns.map(col => col.id), [columns]);
 
   return (
@@ -22,7 +27,12 @@ function ColumnList({ columns, deleteColumn }: ColumnListProps) {
         strategy={horizontalListSortingStrategy}
         items={columnsId}>
         {columns.map(col => (
-          <ColumnItem key={col.id} column={col} deleteColumn={deleteColumn} />
+          <ColumnItem
+            key={col.id}
+            column={col}
+            deleteColumn={deleteColumn}
+            updateColumnTitle={updateColumnTitle}
+          />
         ))}
       </SortableContext>
     </ul>

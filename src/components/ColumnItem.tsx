@@ -3,16 +3,22 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { clsx } from "clsx";
 
-import TrashIcon from "../icons/TrashIcon";
+import TrashIcon from "@/icons/TrashIcon";
+import { Input } from "@/components/ui/input";
 
-import { type Column, type Id } from "../types";
+import { type Column, type Id } from "@/types";
 
 type ColumnItemProps = {
   column: Column;
   deleteColumn: (columnId: Id) => void;
+  updateColumnTitle: (colId: Id, title: string) => void;
 };
 
-function ColumnItem({ column, deleteColumn }: ColumnItemProps) {
+function ColumnItem({
+  column,
+  deleteColumn,
+  updateColumnTitle,
+}: ColumnItemProps) {
   const [editMode, setEditMode] = useState(false);
 
   const {
@@ -28,6 +34,7 @@ function ColumnItem({ column, deleteColumn }: ColumnItemProps) {
       type: "Column",
       column,
     },
+    disabled: editMode,
   });
 
   const style = {
@@ -51,7 +58,21 @@ function ColumnItem({ column, deleteColumn }: ColumnItemProps) {
           <div className="flex items-center justify-center px-2 py-1 text-sm rounded-full bg-columnBackgroundColor">
             0
           </div>
-          {!editMode ? column.title : <input />}
+          {!editMode ? (
+            column.title
+          ) : (
+            <Input
+              autoFocus
+              value={column.title}
+              onChange={e => updateColumnTitle(column.id, e.target.value)}
+              onKeyDown={e => {
+                if (e.key !== "Enter") return;
+                setEditMode(false);
+              }}
+              onBlur={() => setEditMode(false)}
+              className="px-2 bg-black border-2 rounded outline-none focus:border-rose-500 focus-visible:ring-offset-0"
+            />
+          )}
         </div>
         <button
           onClick={() => deleteColumn(column.id)}
