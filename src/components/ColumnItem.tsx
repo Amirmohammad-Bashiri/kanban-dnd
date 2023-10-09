@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/card";
 
 import { Task, type Column, type Id } from "@/types";
-import { log } from "console";
+import TaskList from "./TaskList";
 
 type ColumnItemProps = {
   column: Column;
@@ -23,6 +23,7 @@ type ColumnItemProps = {
   updateColumnTitle: (colId: Id, title: string) => void;
   createTask: (colId: Id) => void;
   tasks: Task[];
+  setTasks: React.Dispatch<React.SetStateAction<Task[]>>;
 };
 
 function ColumnItem({
@@ -31,6 +32,7 @@ function ColumnItem({
   updateColumnTitle,
   createTask,
   tasks,
+  setTasks,
 }: ColumnItemProps) {
   const [editMode, setEditMode] = useState(false);
 
@@ -54,6 +56,11 @@ function ColumnItem({
     transition,
     transform: CSS.Transform.toString(transform),
   };
+
+  function deleteTask(taskId: Id) {
+    const updatedTasks = tasks.filter(task => task.id !== taskId);
+    setTasks(updatedTasks);
+  }
 
   return (
     <li>
@@ -91,14 +98,12 @@ function ColumnItem({
           </CardTitle>
           <button
             onClick={() => deleteColumn(column.id)}
-            className="px-1 py-2 rounded stroke-gray-500 hover:stroke-white hover:bg-columnBackgroundColor">
+            className="w-6 h-6 pb-8 rounded stroke-gray-500 hover:stroke-white hover:bg-columnBackgroundColor">
             <TrashIcon />
           </button>
         </CardHeader>
-        <CardContent className="flex flex-grow">
-          {tasks.map(task => (
-            <div key={task.id}>{task.content}</div>
-          ))}
+        <CardContent className="flex flex-col flex-grow gap-4 p-2 overflow-x-hidden overflow-y-auto">
+          <TaskList deleteTask={deleteTask} tasks={tasks} setTasks={setTasks} />
         </CardContent>
         <CardFooter className="p-0">
           <button

@@ -55,6 +55,7 @@ function ColumnList({
             updateColumnTitle={updateColumnTitle}
             createTask={createTask}
             tasks={getTasks(col.id)}
+            setTasks={setTasks}
           />
         ))}
       </SortableContext>
@@ -67,6 +68,7 @@ function ColumnList({
               deleteColumn={deleteColumn}
               createTask={createTask}
               tasks={getTasks(activeCol.id)}
+              setTasks={setTasks}
             />
           ) : null}
         </DragOverlay>,
